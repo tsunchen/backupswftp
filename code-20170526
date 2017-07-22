@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+
+from sys import argv
+import telnetlib
+
+def telnetsw2ftp(host, ip, username, password, enable_pw):
+	tn = telnetlib.Telnet(ip)
+	tn.read_until('Username: ')
+	tn.write(username + '\n')
+	tn.read_until('Password: ')
+	tn.write(password + '\n')
+	tn.write('enable\n')
+	tn.read_until('Password: ')
+	tn.write(enable_pw + '\n')
+	tn.write('\n')
+	tn.write('\n')
+	tn.write('conf t' + '\n')
+	tn.write('ip ftp username tscisco.copyrun' + '\n')
+	tn.write('ip ftp password Ccq480105_cisco' + '\n')
+	tn.write('exit\n')
+	tn.write('copy startup-config ftp://50.62.160.81/ftp/tscisco/' + '\n')
+	tn.write('\n')
+	tn.write(host + '.txt' + '\n')
+	tn.write('\n')
+	tn.write('\n')
+	tn.write('conf t' + '\n')
+	tn.write('no ip ftp username' + '\n')
+	tn.write('no ip ftp password' + '\n')
+	tn.write('exit\n')
+	tn.write('\n')
+	tn.write('\n')
+	tn.write('quit\n')
+	temp = tn.read_all()
+	print "%r", temp
+	print "Done!\n"
+
+filename = 'D:\tnini.txt'
+sw_ini = open(filename)
+countsw = 0
+while 1:
+  swcfg = sw_ini.readline()
+  if swcfg :
+      host , ip , username , password , enable_password = swcfg.split(':')
+      print '开始备份'+ host
+      tn = telnetlib.Telnet(ip)
+      telnetsw2ftp(host , ip , username , password , enable_password)
+      countsw+=1
+  else:
+      break
+sw_ini.close()
+print '所有交换机备份完成!'
+print '共计备份%d台交换机'% countsw
+
+
+
+
+
+
+
+
+
+	
