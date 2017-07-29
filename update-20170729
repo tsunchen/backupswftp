@@ -1,0 +1,24 @@
+......
+while 1:
+  swcfg = sw_ini.readline()
+  if swcfg :
+      host , ip , username , password , enable_password = swcfg.split(':')
+      print 'Start Backuping: '+ host
+      #tn = telnetlib.Telnet(ip)
+      #telnetswftp(host , ip , username , password , enable_password)
+      #t = threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password))
+      #t.start()
+      #t.join()
+      res_list.append(threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password)) )
+      countsw += 1
+  else:
+      break
+
+sw_ini.close()
+
+for i in res_list:
+  i.start()
+
+for i in res_list:
+  i.join()
+......
