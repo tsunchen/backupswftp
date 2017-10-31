@@ -21,6 +21,8 @@ sys.setdefaultencoding('utf-8')
 
 import time
 
+
+
 def telnetswftp(host, ip, username, password, enable_password, interfaceport, displayname):
      tn = telnetlib.Telnet(ip)
      tn.read_until('Username: ')
@@ -57,7 +59,7 @@ def telnetswftp(host, ip, username, password, enable_password, interfaceport, di
      if 'speed' in temp:
           print ("%s speed limit is") % (interfaceport)
           displayname=temp.index('speed')
-          print temp[displayname:displayname+12]
+          print ("!"+temp[displayname:displayname+12])
      else:
           print ("%s UNLIMITED Speed") % (interfaceport)
 
@@ -101,3 +103,4 @@ for i in res_list:
 
 print 'All switchers\' showing are completed!'
 print 'Count of Backuping is %d '% countsw
+
