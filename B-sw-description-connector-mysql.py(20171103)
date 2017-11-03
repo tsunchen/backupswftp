@@ -1,0 +1,134 @@
+#
+# destination ftp 
+#
+# copy startup-config
+#
+# www.tsunchen.com/ftp/tscisco/
+#
+
+
+
+
+#-*- coding: utf-8 -*-
+from sys import argv
+import telnetlib
+
+import threading
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+import time
+
+from mysqlpython.connmysql import connmysql_insert_sharecab
+
+
+
+def telnetswftp(host, ip, username, password, enable_password, interfaceport, displayname):
+     tn = telnetlib.Telnet(ip)
+     tn.read_until('Username: ')
+     tn.write(username + '\n')
+     tn.read_until('Password: ')
+     tn.write(password + '\n')
+     tn.write('enable' + '\n')
+     tn.read_until('Password: ')
+     tn.write(enable_password + '\n')
+     tn.write('\n')
+     tn.write('\n')
+     #tn.write('conf t' + '\n')
+
+     tn.write('show run interface ' + interfaceport)
+     #tn.write('ip ftp username tscisco.copyrun' + '\n')
+     #tn.write('ip ftp password Ccq480105_cisco' + '\n')
+     #tn.write('exit' + '\n')
+     #tn.write('copy startup-config ftp' + '\n')
+     #tn.write('50.62.160.81' + '\n')
+     #tn.write(host + '.txt' + '\n')
+     #tn.write(host + '\n')
+     tn.write('\n')
+     tn.write('\n')
+     #tn.write('conf t' + '\n')
+     #tn.write('no ip ftp username tscisco.copyrun' + '\n')
+     #tn.write('no ip ftp password Ccq480105_cisco' + '\n')
+     #tn.write('exit' + '\n')
+     tn.write('\n')
+     tn.write('\n')
+     tn.write('quit\n')
+     temp = tn.read_all()
+
+     print (">>> %s " % ip)
+     if 'speed' in temp:
+          print ("%s speed limit is") % (interfaceport)
+          displayname=temp.index('speed')
+          #print ("!"+temp[displayname:displayname+12])
+          speedflag = "!"+temp[displayname:displayname+12]
+
+          print ("speedflag = %s" % speedflag)
+     else:
+          speedflag = "Unlimited"
+          print ("%s No Limit Speed") % (interfaceport)
+
+     if 'description' in temp:
+          print ("%s descriptions is") % (interfaceport)
+          
+          displayname_desc=temp.index('description')
+          temp2 = temp[displayname_desc:]
+          displayname_desc_end=temp2.index(')')
+          #print (temp[displayname_desc:])
+          #print ("1:%s" % displayname_desc)
+          #print ("2:%s" % displayname_desc_end)
+          descflag = "!"+temp[displayname_desc:(displayname_desc+displayname_desc_end)]
+          #descflag = "!"+temp[displayname_desc:(displayname_desc+64)]
+          print ("descflag = %s" % descflag)
+     else:
+          descflag = "No Describe"
+          print ("%s No Description") % (interfaceport)
+
+
+     #parameters = ('B-NX', 'Fa0/XX', 'Desc', 'Speed 10')
+     params = (host, interfaceport, descflag, speedflag)
+     connmysql_insert_sharecab('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc', params)
+     time.sleep(1)
+     #connmysql_insert('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc')
+     #print "%r", temp
+     #print interfaceport
+     #print displayname
+     print 'Done!\n'
+
+
+
+filename = 'E:/backupswitch/b-sw-sharenflow.ini'
+sw_ini = open(filename)
+countsw = 0
+
+res_list = []
+
+while 1:
+  swcfg = sw_ini.readline()
+  if swcfg :
+      host , ip , username , password , enable_password, interfaceport, displayname = swcfg.split(':')
+      print 'Start Scanning: '+ host
+      #tn = telnetlib.Telnet(ip)
+      #telnetswftp(host , ip , username , password , enable_password)
+      #t = threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password))
+      #t.start()
+      #t.join()
+      res_list.append(threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password, interfaceport, displayname)) )
+      countsw += 1
+  else:
+      break
+
+sw_ini.close()
+
+for i in res_list:
+  i.start()
+
+for i in res_list:
+  i.join()
+  if i.isAlive():
+    print '->>>: the threading %s has not done yet' %i
+
+print 'All switchers\' showing are completed!'
+print 'Count of Backuping is %d '% countsw
+
