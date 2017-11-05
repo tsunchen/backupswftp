@@ -87,8 +87,8 @@ if sys.argv[1] and sys.argv[2]:
             for port in range(0, lenport):
               if (int(ifspd[port]) != 0):
                 print "InBound[%s]: %s" % (portdesc[port] , ifInOctets_scripts[port])
-                result_ifIn = int(ifInOctets_scripts[port]) * 8 * 1 / (int(ifspd[port]) )
-                result_ifIn_15 = int(ifInOctets_scripts[15]) * 8 * 1 / (int(ifspd[15]) )
+                result_ifIn = int(ifInOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
+                result_ifIn_15 = int(ifInOctets_scripts[15]) * 8 * 100 / (int(ifspd[15]) )
                 print "delta_input_utilization: %s " % result_ifIn
                 if (result_ifIn > 0 and result_ifIn < limitline):
                     pass #print ""
@@ -103,8 +103,8 @@ if sys.argv[1] and sys.argv[2]:
             for port in range(0, lenport):
               if (int(ifspd[port]) != 0):
                 print "OutBound[%s]: %s" % (portdesc[port] , ifOutOctets_scripts[port])
-                result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 1 / (int(ifspd[port]) )
-                result_ifOut_15 = int(ifOutOctets_scripts[15]) * 8 * 1 / (int(ifspd[15]) )
+                result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
+                result_ifOut_15 = int(ifOutOctets_scripts[15]) * 8 * 100 / (int(ifspd[15]) )
                 print "delta_output_utilization: %s " % result_ifOut
                 if (result_ifOut > 0 and result_ifOut < limitline):
                     pass #print ""
