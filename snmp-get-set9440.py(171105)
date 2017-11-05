@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# 2017 - Nov
+# using snmp get switch serial, model, manage ip ..
+
+import netsnmp
+import sys
+import urllib
+import urllib2
+import time
+import rrdtool
+
+limitline = 1 * 1024 * 1024 # 1M
+
+# reference python for linux and unix administration page 209
+class Snmp(object):
+    """A basic SNMP session"""
+    def __init__(self,oid="sysDescr", Version=2):
+        self.oid = oid
+        self.version = Version
+        self.destHost = sys.argv[1]
+        self.community = sys.argv[2]
+
+    def query(self):
+        """Creates SNMP query session"""
+        try:
+            result = netsnmp.snmpwalk(self.oid, Version = self.version, DestHost = self.destHost, Community = self.community)
+        except (Exception, err):
+            print (err)
+            result = None
+        return result
+
+print (sys.argv[1] + sys.argv[2])
+print limitline
+if sys.argv[1] and sys.argv[2]:
+    s = Snmp()
+    '''
+    #print s.query()
+    #s.oid = "2.47.1.1.1.1.11.1001"
+    #hdttp://tools.cisco.com/Support/SNMP/do/BrowseOID.do
+    s.oid = ".1.3.6.1.2.1.4.20.1.1" # manage ip ipAdEntAddr
+    ip = s.query()
+    print s.query()
+    #telnet = ip[0]
+    #print ("ip: " + telnet)
+    
+    s.oid = ".1.3.6.1.4.1.9.3.6.3" # serial numbers chassisId
+    serial = s.query()
+    serial = serial[0]
+    print ("serial: " + serial)
+    
+    s.oid = ".1.3.6.1.2.1.47.1.1.1.1" # product_model entPhysicalEntry
+    product_model = s.query()
+    #product_model = product_model[1].split(' ')[0]
+    #print ("product_model: " + product_model)
+    print s.query()
+    
+    s.oid = ".1.3.6.1.4.1.9.2.1.3" # hostname hostName
+    hostname = s.query()
+    hostname = hostname[0]
+    print ("hostname: " + hostname)
+
+
+    s.oid = ".1.3.6.1.2.1.31.1.1.1.18" # port description
+    portdesc = s.query()
+    #portdesc = portdesc[0]
+    print ("port description: ")
+    print portdesc
+    '''
+    s.oid = "ifSpeed"
+    ifspd = s.query()
+    print ifspd
+
+    s.oid = ".1.3.6.1.2.1.31.1.1.1.18" # port description
+    portdesc = s.query()
+    print portdesc
+    print len(portdesc)
+    lenports = len(portdesc)
+    lenport = lenports - 1
+
+    result_ifIn, result_ifOut = (0 ,0)
+    while True:
+        #result_ifIn, result_ifOut = (0 ,0)
+        s.oid = "ifInOctets"
+        ifInOctets_scripts = s.query()
+        ifInOctets_script = ifInOctets_scripts
+        if (len(ifInOctets_scripts) == lenports):
+            for port in range(0, lenport):
+              if (int(ifspd[port]) != 0):
+                print "InBound[%s]: %s" % (portdesc[port] , ifInOctets_scripts[port])
+                result_ifIn = int(ifInOctets_scripts[port]) * 8 * 1 / (int(ifspd[port]) )
+                result_ifIn_15 = int(ifInOctets_scripts[15]) * 8 * 1 / (int(ifspd[15]) )
+                print "delta_input_utilization: %s " % result_ifIn
+                if (result_ifIn > 0 and result_ifIn < limitline):
+                    pass #print ""
+                else:
+                    print "warning: ifIn%s::%s broke limit on %s " % (port, portdesc[port], result_ifIn)
+
+
+        s.oid = "ifOutOctets"
+        ifOutOctets_scripts = s.query()
+        ifOutOctets_script = ifOutOctets_scripts
+        if (len(ifOutOctets_scripts) == lenports):
+            for port in range(0, lenport):
+              if (int(ifspd[port]) != 0):
+                print "OutBound[%s]: %s" % (portdesc[port] , ifOutOctets_scripts[port])
+                result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 1 / (int(ifspd[port]) )
+                result_ifOut_15 = int(ifOutOctets_scripts[15]) * 8 * 1 / (int(ifspd[15]) )
+                print "delta_output_utilization: %s " % result_ifOut
+                if (result_ifOut > 0 and result_ifOut < limitline):
+                    pass #print ""
+                else:
+                    print "warning: ifOut%s::%s broke limit on %s " % (port, portdesc[port], result_ifOut)
+
+
+        #print result_ifIn, result_ifOut
+        print "+---+---+---+---+"
+        rrdval_9440 = rrdtool.updatev('w-2924-24-ct-08-share-50_traffic_in_9440.rrd','N:%d:%d' % (result_ifIn_15, result_ifOut_15))
+        #print rrdval_9440
+        #time.sleep(1)
