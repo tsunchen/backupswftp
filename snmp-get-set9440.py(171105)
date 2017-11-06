@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-# 2017 - Nov
+# 2017 - Nov.06
 # using snmp get switch serial, model, manage ip ..
+# scanning the switch port get flowing status
 
 import netsnmp
 import sys
@@ -24,7 +25,7 @@ class Snmp(object):
         """Creates SNMP query session"""
         try:
             result = netsnmp.snmpwalk(self.oid, Version = self.version, DestHost = self.destHost, Community = self.community)
-        except (Exception, err):
+        except Exception, err:
             print (err)
             result = None
         return result
@@ -66,54 +67,81 @@ if sys.argv[1] and sys.argv[2]:
     print ("port description: ")
     print portdesc
     '''
+
+    time.sleep(1)
+
     s.oid = "ifSpeed"
     ifspd = s.query()
-    print ifspd
+    print "ifSpeed: ",
+    print (ifspd)
+
+    time.sleep(1)
+    s.oid = ".1.3.6.1.4.1.9.2.1.3" # hostname hostName
+    hostname = s.query()
+    hostname = hostname[0]
+    print ("hostname: " + hostname)
 
     s.oid = ".1.3.6.1.2.1.31.1.1.1.18" # port description
     portdesc = s.query()
+    print "port description: ",
     print portdesc
     print len(portdesc)
     lenports = len(portdesc)
     lenport = lenports - 1
 
-    result_ifIn, result_ifOut = (0 ,0)
+    result_ifIn, result_ifOut = (0 ,0) # ifIn , ifOut
     while True:
         #result_ifIn, result_ifOut = (0 ,0)
         s.oid = "ifInOctets"
         ifInOctets_scripts = s.query()
         ifInOctets_script = ifInOctets_scripts
         if (len(ifInOctets_scripts) == lenports):
+            totIn = 0 # totalize ifIn
             for port in range(0, lenport):
               if (int(ifspd[port]) != 0):
-                print "InBound[%s]: %s" % (portdesc[port] , ifInOctets_scripts[port])
+                #print "InBound[%s]: %s" % (portdesc[port] , ifInOctets_scripts[port])
                 result_ifIn = int(ifInOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
                 result_ifIn_15 = int(ifInOctets_scripts[15]) * 8 * 100 / (int(ifspd[15]) )
-                print "delta_input_utilization: %s " % result_ifIn
-                if (result_ifIn > 0 and result_ifIn < limitline):
+                totIn += result_ifIn
+            print "totalize ifIn: %s" % totIn
+            for port in range(0, lenport):
+              if (int(ifspd[port]) != 0):
+                print "InBound[%s]: %s" % (portdesc[port] , ifInOctets_scripts[port]),
+                result_ifIn = int(ifInOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
+                delta_ifIn_u = result_ifIn * 100 / totIn
+                print "delta_input_utilization: %s [%s]" % (delta_ifIn_u, result_ifIn)
+                #if (result_ifIn > 0 and result_ifIn < limitline):
+                if (delta_ifIn_u <= 30):
                     pass #print ""
                 else:
-                    print "warning: ifIn%s::%s broke limit on %s " % (port, portdesc[port], result_ifIn)
+                    print "...warning: ifIn%s::%s broke limit, hit on %s " % (port, portdesc[port], result_ifIn)
 
 
         s.oid = "ifOutOctets"
         ifOutOctets_scripts = s.query()
         ifOutOctets_script = ifOutOctets_scripts
         if (len(ifOutOctets_scripts) == lenports):
+            totOut = 0 # totalize ifOut
             for port in range(0, lenport):
               if (int(ifspd[port]) != 0):
-                print "OutBound[%s]: %s" % (portdesc[port] , ifOutOctets_scripts[port])
                 result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
                 result_ifOut_15 = int(ifOutOctets_scripts[15]) * 8 * 100 / (int(ifspd[15]) )
-                print "delta_output_utilization: %s " % result_ifOut
-                if (result_ifOut > 0 and result_ifOut < limitline):
+                totOut += result_ifOut
+            print "totalize ifOut: %s" % totOut
+            for port in range(0, lenport):
+              if (int(ifspd[port]) != 0):
+                print "OutBound[%s]: %s" % (portdesc[port] , ifOutOctets_scripts[port]),
+                result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
+                delta_ifOut_u = result_ifOut * 100 /totOut
+                print "delta_output_utilization: %s [%s]" % (delta_ifOut_u, result_ifOut)
+                if (delta_ifOut_u <= 30):
                     pass #print ""
                 else:
-                    print "warning: ifOut%s::%s broke limit on %s " % (port, portdesc[port], result_ifOut)
+                    print "...warning: ifOut%s::%s broke limit, hit on %s " % (port, portdesc[port], result_ifOut)
 
 
         #print result_ifIn, result_ifOut
         print "+---+---+---+---+"
         rrdval_9440 = rrdtool.updatev('w-2924-24-ct-08-share-50_traffic_in_9440.rrd','N:%d:%d' % (result_ifIn_15, result_ifOut_15))
-        #print rrdval_9440
+        print rrdval_9440
         #time.sleep(1)
