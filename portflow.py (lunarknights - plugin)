@@ -2,7 +2,7 @@
 # 2017 - Nov.7
 # using snmp get switch serial, model, manage ip ..
 # scanning the switch port get flowing status
-# projectname : lunarknights - plugin
+# projectname : lunarknights
 
 import netsnmp
 import sys
@@ -13,8 +13,8 @@ import time
 
 limitline = 1 * 1024 * 1024 # 1M
 
-ifIn_dict = {}
-ifOut_dict = {}
+ifPort_dict = {}
+#ifOut_dict = {}
 
 # reference python for linux and unix administration page 209
 class Snmp(object):
@@ -133,7 +133,9 @@ def portflow(ip, community):
                     delta_ifIn_u = result_ifIn * 100 / totIn
                     print "delta_input_utilization: %s [%s]" % (delta_ifIn_u, result_ifIn)
                     #ifIn_dict['%s'] = %s % (ifInOctets_scripts[port], delta_ifIn_u)
-                    ifIn_dict[portdesc[port]] = delta_ifIn_u
+                    #ifIn_dict[portdesc[port]] = delta_ifIn_u
+                    ifIn_portdesc = str(portdesc[port]) + 'ifIn'
+                    ifPort_dict[ifIn_portdesc] = delta_ifIn_u
                     #if (result_ifIn > 0 and result_ifIn < limitline):
                     if (delta_ifIn_u <= 30):
                         pass #print ""
@@ -159,6 +161,8 @@ def portflow(ip, community):
                     result_ifOut = int(ifOutOctets_scripts[port]) * 8 * 100 / (int(ifspd[port]) )
                     delta_ifOut_u = result_ifOut * 100 /totOut
                     print "delta_output_utilization: %s [%s]" % (delta_ifOut_u, result_ifOut)
+                    ifOut_portdesc = str(portdesc[port]) + 'ifOut'
+                    ifPort_dict[ifOut_portdesc] = delta_ifOut_u
                     if (delta_ifOut_u <= 30):
                         pass #print ""
                     else:
@@ -170,7 +174,7 @@ def portflow(ip, community):
             #rrdval_9440 = rrdtool.updatev('w-2924-24-ct-08-share-50_traffic_in_9440.rrd','N:%d:%d' % (result_ifIn_15, result_ifOut_15))
             #print rrdval_9440
             #time.sleep(1)
-    return (ifIn_dict)
+    return (ifPort_dict)
 
 
 if __name__ == '__main__':
