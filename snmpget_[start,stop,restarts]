@@ -1,0 +1,31 @@
+
+## snmpget_start.sh
+#!/bin/bash
+cd ~/rrdtest
+/usr/bin/python  snmp-get-set9440.py  211.152.50.254 publ1c  >  snmp-get-set9440.log 2>&1 &
+echo "Snmp-get-set9440 started."
+
+
+
+## snmpget_stop.sh
+#!/bin/bash
+cd ~/rrdtest
+/usr/bin/python  snmp-get-set9440.py  211.152.50.254 publ1c  >  snmp-get-set9440.log 2>&1 &
+echo "Snmp-get-set9440 started."
+[root@tsunz rrdtest]# cat snmpget_stop.sh
+#!/bin/bash
+echo "Stopping Snmpget..."
+PID=`ps -ef | grep  snmp-get-set9440 | grep -v grep | awk '{print $2}'`
+if [[ "" !=  "$PID" ]]; then
+  echo "killing $PID"
+  kill -9 $PID
+fi
+echo "Snmp-get-set9440 stopped."
+
+
+## snmpget_restart.sh
+#!/bin/bash
+cd ~/rrdtest/
+sh snmpget_stop.sh
+echo "Restarting Snmpget..."
+sh snmpget_start.sh
