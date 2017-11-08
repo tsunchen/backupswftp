@@ -3,24 +3,7 @@
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 
-'''
-class Snmp(object):
-    """A basic SNMP session"""
-    def __init__(self,oid="sysDescr", Version=2):
-        self.oid = oid
-        self.version = Version
-        self.destHost = sys.argv[1]
-        self.community = sys.argv[2]
 
-    def query(self):
-        """Creates SNMP query session"""
-        try:
-            result = netsnmp.snmpwalk(self.oid, Version = self.version, DestHost = self.destHost, Community = self.community)
-        except Exception, err:
-            print (err)
-            result = None
-        return result
-'''
 
 
 # reference python for linux and unix administration
