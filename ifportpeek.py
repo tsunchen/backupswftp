@@ -69,7 +69,7 @@ def runit(loop, community, host, port):
         print ifIn
         ifIn = int(ifIn)
         #ifInKey = 'ifIn' + port
-        ifInKey = 'ifIn::' + ifDesc
+        ifInKey = 'ifIn::' + ifDesc.replace("/","_")
         ifPort[ifInKey] = ifIn
 
         ifOutMIB = '1.3.6.1.2.1.2.2.1.16.'
@@ -83,7 +83,7 @@ def runit(loop, community, host, port):
         print ifOut
         ifOut = int(ifOut)
         #ifOutKey = 'ifOut' + port
-        ifOutKey = 'ifOut::' + ifDesc
+        ifOutKey = 'ifOut::' + ifDesc.replace("/","_")
         ifPort[ifOutKey] = ifOut
 
         ifSpdMIB = '1.3.6.1.2.1.2.2.1.5.'
