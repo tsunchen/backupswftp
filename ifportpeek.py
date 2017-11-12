@@ -68,7 +68,8 @@ def runit(loop, community, host, port):
             ifIn = s.query()
         print ifIn
         ifIn = int(ifIn)
-        ifInKey = 'ifIn' + port
+        #ifInKey = 'ifIn' + port
+        ifInKey = 'ifIn::' + ifDesc
         ifPort[ifInKey] = ifIn
 
         ifOutMIB = '1.3.6.1.2.1.2.2.1.16.'
@@ -81,7 +82,8 @@ def runit(loop, community, host, port):
             ifOut = s.query()
         print ifOut
         ifOut = int(ifOut)
-        ifOutKey = 'ifOut' + port
+        #ifOutKey = 'ifOut' + port
+        ifOutKey = 'ifOut::' + ifDesc
         ifPort[ifOutKey] = ifOut
 
         ifSpdMIB = '1.3.6.1.2.1.2.2.1.5.'
@@ -94,7 +96,8 @@ def runit(loop, community, host, port):
             ifSpd = s.query()
         print ifSpd
         ifSpd = int(ifSpd)
-        ifSpdKey = 'ifSpd' + port
+        #ifSpdKey = 'ifSpd' + port
+        ifSpdKey = 'ifSpd::' + ifDesc
         ifPort[ifSpdKey] = ifSpd
 
         ifInPortflow = ifIn * 8 * 100 / ifSpd
