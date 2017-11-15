@@ -5,6 +5,8 @@
 #
 # www.tsunchen.com/ftp/tscisco/
 #
+# project: update description, add )
+# project: mysql, add emailhead
 
 
 
@@ -25,7 +27,7 @@ from mysqlpython.connmysql import connmysql_insert_sharecab
 
 
 
-def telnetswftp(host, ip, username, password, enable_password, interfaceport, displayname):
+def telnetswftp(host, ip, username, password, enable_password, interfaceport, emailhead):
      tn = telnetlib.Telnet(ip)
      tn.read_until('Username: ')
      tn.write(username + '\n')
@@ -78,7 +80,7 @@ def telnetswftp(host, ip, username, password, enable_password, interfaceport, di
           #print (temp[displayname_desc:])
           #print ("1:%s" % displayname_desc)
           #print ("2:%s" % displayname_desc_end)
-          descflag = "!"+temp[displayname_desc:(displayname_desc+displayname_desc_end)]
+          descflag = "!"+temp[displayname_desc:(displayname_desc+displayname_desc_end)]+")"
           #descflag = "!"+temp[displayname_desc:(displayname_desc+64)]
           print ("descflag = %s" % descflag)
      else:
@@ -87,7 +89,7 @@ def telnetswftp(host, ip, username, password, enable_password, interfaceport, di
 
 
      #parameters = ('B-NX', 'Fa0/XX', 'Desc', 'Speed 10')
-     params = (host, interfaceport, descflag, speedflag)
+     params = (host, interfaceport, descflag, speedflag, emailhead)
      connmysql_insert_sharecab('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc', params)
      time.sleep(1)
      #connmysql_insert('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc')
@@ -98,7 +100,7 @@ def telnetswftp(host, ip, username, password, enable_password, interfaceport, di
 
 
 
-filename = 'E:/backupswitch/b-sw-sharenflow.ini'
+filename = 'E:/backupswitch/b-sw-sharenflow-20171115.ini'
 sw_ini = open(filename)
 countsw = 0
 
@@ -107,14 +109,15 @@ res_list = []
 while 1:
   swcfg = sw_ini.readline()
   if swcfg :
-      host , ip , username , password , enable_password, interfaceport, displayname = swcfg.split(':')
+      print swcfg.split(':')
+      host , ip , username , password , enable_password, interfaceport, displayname, servicer, emailhead = swcfg.split(':')
       print 'Start Scanning: '+ host
       #tn = telnetlib.Telnet(ip)
       #telnetswftp(host , ip , username , password , enable_password)
       #t = threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password))
       #t.start()
       #t.join()
-      res_list.append(threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password, interfaceport, displayname)) )
+      res_list.append(threading.Thread(target=telnetswftp, args=(host , ip , username , password , enable_password, interfaceport, emailhead)) )
       countsw += 1
   else:
       break
