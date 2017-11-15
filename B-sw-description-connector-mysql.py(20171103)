@@ -6,7 +6,7 @@
 # www.tsunchen.com/ftp/tscisco/
 #
 # project: update description, add )
-# project: mysql, add emailhead
+# project: mysql, add emailhead scabip
 
 
 
@@ -89,7 +89,7 @@ def telnetswftp(host, ip, username, password, enable_password, interfaceport, em
 
 
      #parameters = ('B-NX', 'Fa0/XX', 'Desc', 'Speed 10')
-     params = (host, interfaceport, descflag, speedflag, emailhead)
+     params = (host, ip, interfaceport, descflag, speedflag, emailhead)
      connmysql_insert_sharecab('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc', params)
      time.sleep(1)
      #connmysql_insert('50.62.209.86','adminidc','idc_21viacloud','tsun_chen_idc')
