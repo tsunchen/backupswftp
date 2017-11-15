@@ -109,7 +109,7 @@ res_list = []
 while 1:
   swcfg = sw_ini.readline()
   if swcfg :
-      print swcfg.split(':')
+      #print swcfg.split(':')
       host , ip , username , password , enable_password, interfaceport, displayname, servicer, emailhead = swcfg.split(':')
       print 'Start Scanning: '+ host
       #tn = telnetlib.Telnet(ip)
