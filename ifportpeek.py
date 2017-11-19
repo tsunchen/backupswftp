@@ -96,6 +96,8 @@ def runit(loop, community, host, port):
             ifSpd = s.query()
         print ifSpd
         ifSpd = int(ifSpd)
+        if (ifSpd == 0):
+            ifSpd = 100000000 
         #ifSpdKey = 'ifSpd' + port
         ifSpdKey = 'ifSpd::' + ifDesc
         ifPort[ifSpdKey] = ifSpd
@@ -111,6 +113,29 @@ def runit(loop, community, host, port):
         #print i
 
 if __name__ == "__main__":
+    runit(1, 'publ1c', '211.152.50.254', '1')
+    runit(1, 'publ1c', '211.152.50.254', '2')
+    runit(1, 'publ1c', '211.152.50.254', '3')
+    runit(1, 'publ1c', '211.152.50.254', '4')
+    runit(1, 'publ1c', '211.152.50.254', '5')
+    runit(1, 'publ1c', '211.152.50.254', '6')
+    runit(1, 'publ1c', '211.152.50.254', '7')
+    runit(1, 'publ1c', '211.152.50.254', '8')
+    runit(1, 'publ1c', '211.152.50.254', '9')
+    runit(1, 'publ1c', '211.152.50.254', '10')
+    runit(1, 'publ1c', '211.152.50.254', '11')
+    runit(1, 'publ1c', '211.152.50.254', '12')
+    runit(1, 'publ1c', '211.152.50.254', '13')
+    runit(1, 'publ1c', '211.152.50.254', '14')
     runit(1, 'publ1c', '211.152.50.254', '15')
     runit(1, 'publ1c', '211.152.50.254', '16')
+    runit(1, 'publ1c', '211.152.50.254', '17')
+    runit(1, 'publ1c', '211.152.50.254', '18')
+    runit(1, 'publ1c', '211.152.50.254', '19')
+    runit(1, 'publ1c', '211.152.50.254', '20')
+    runit(1, 'publ1c', '211.152.50.254', '21')
+    runit(1, 'publ1c', '211.152.50.254', '22')
+    runit(1, 'publ1c', '211.152.50.254', '23')
+    runit(1, 'publ1c', '211.152.50.254', '24')
+    runit(1, 'publ1c', '211.152.50.254', '25')
     print ifPort
