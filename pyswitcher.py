@@ -6,6 +6,7 @@
 # www.tsunchen.com/ftp/tscisco/
 #
 # 12-Jan-2019 (F:\ProgramData\Anaconda2) C:\Users\Administrator>python e:\projects\python\pyswitcher\pyswitcher.py
+# host:ip:username:password:enable_password:interfaceport:displayname:speedlimit:enable_line
 #
 
 
